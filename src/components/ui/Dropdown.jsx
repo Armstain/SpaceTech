@@ -8,7 +8,7 @@ const Dropdown = ({ trigger, children }) => {
 
   return (
     <div 
-      className="relative" 
+      className="relative z-50" 
       ref={dropdownRef}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
@@ -25,7 +25,7 @@ const Dropdown = ({ trigger, children }) => {
 
       {/* Dropdown content */}
       <div
-        className={`absolute top-full right-0 mt-2 w-48 rounded-md  shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out ${
+        className={`absolute top-full right-0 mt-2 w-48 rounded-md bg-base-200 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out ${
           isOpen
             ? 'opacity-100 translate-y-0 visible'
             : 'opacity-0 -translate-y-2 invisible'

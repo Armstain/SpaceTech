@@ -80,7 +80,7 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-200 pt-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm">© 2025, Ecommerce By SpacingTechTM</p>
+            <p className="text-sm">© 2025, Ecommerce By SpaceTech</p>
             
             <div className="flex items-center gap-4">
               <FaCcVisa size={32} className="text-[#1434CB]" />

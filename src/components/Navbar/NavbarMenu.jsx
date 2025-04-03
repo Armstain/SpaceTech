@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Link from 'next/link'
 import { Phone } from 'lucide-react'
@@ -49,7 +50,7 @@ const NavbarMenu = () => {
     if (item.type === 'dropdown') {
       return (
         <Dropdown key={item.label} trigger={item.label}>
-          <div className="py-2">
+          <div className="py-2 z-100">
             {item.items.map((dropdownItem) => (
               <Link
                 key={dropdownItem.href}
@@ -70,7 +71,10 @@ const NavbarMenu = () => {
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <h1 className='text-2xl font-bold'>SpaceTech</h1>
+          <h1 className='text-2xl font-bold'>
+            <span className="text-primary">Space</span>
+            <span className="bg-primary text-white px-2 py-1 rounded-md ml-0.5">Tech</span>
+          </h1>
         </Link>
 
         {/* Navigation Items */}
