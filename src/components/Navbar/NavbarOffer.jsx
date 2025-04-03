@@ -3,8 +3,9 @@ import { User, Heart } from 'lucide-react'
 
 const NavbarOffer = () => {
   return (
-    <div className='container mx-auto'>
-      <div className="bg-white py-2 text-sm border-b">
+    <div className=''>
+      <div className='container mx-auto'>
+      <div className=" py-2 text-sm ">
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="text-gray-600">
           Need help? call us : +8801717171717
@@ -31,6 +32,7 @@ const NavbarOffer = () => {
           </Link>
         </div>
       </div>
+    </div>
     </div>
     </div>
   )
