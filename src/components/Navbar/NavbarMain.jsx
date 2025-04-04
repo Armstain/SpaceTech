@@ -54,7 +54,7 @@ const NavbarMain = () => {
           {/* Right - Cart */}
           <Link 
             href="/cart" 
-            className="bg-secondary text-secondary-content h-full px-6 flex items-center gap-2 ml-auto hidden lg:block"
+            className="bg-secondary text-secondary-content h-full px-6  items-center gap-2 ml-auto hidden md:flex"
           >
             <ShoppingCart className="w-5 h-5" />
             <div className="flex items-center gap-1">

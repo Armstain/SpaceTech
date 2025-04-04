@@ -152,7 +152,7 @@ const NavbarMenu = () => {
         </div>
         
         {/* Phone Number (hidden on mobile) */}
-        <div className="flex items-center gap-2 text-base group transition-colors duration-300 hover:text-red-500 hidden md:block">
+        <div className="hidden md:flex items-center gap-2 text-base group transition-colors duration-300 hover:text-red-500">
           <Phone className="h-5 w-5 text-red-500 group-hover:scale-110 transition-transform duration-300" />
           <span className="group-hover:translate-x-1 transition-transform duration-300">
             (+92) 0123 456 789
@@ -206,7 +206,7 @@ const NavbarMenu = () => {
           <div className="absolute bottom-0 left-0 w-full border-t border-gray-100 p-4">
             <div className="flex items-center gap-2 text-base">
               <Phone className="h-5 w-5 text-red-500" />
-              <span>(+92) 0123 456 789</span>
+              <span>(+92) 0123 456 79</span>
             </div>
           </div>
         </div>
