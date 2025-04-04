@@ -9,12 +9,12 @@ const NavbarOffer = () => {
       <div className='container mx-auto'>
         <div className="py-2 text-sm">
           <div className="container mx-auto flex justify-between items-center px-4">
-            <div className="text-gray-600">
+            <div className="text-gray-600 hidden md:block">
               Need help? call us : +8801717171717
             </div>
             
-            <div className="flex items-center gap-2">
-              <p> <p className=" ">🚧 This site is under construction - Coming Soon! 🚧</p></p>
+            <div className="flex items-center gap-2 text-center">
+               <p className=" ">🚧 This site is under construction - Coming Soon! 🚧</p>
               {/* <Link 
                 href="/list" 
                 className="text-red-500 font-semibold hover:text-red-600"
@@ -23,7 +23,7 @@ const NavbarOffer = () => {
               </Link> */}
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 hidden md:block">
               <Link href="/auth" className="hover:text-gray-600 flex items-center gap-1">
                 <User size={20} />
                 Sign in

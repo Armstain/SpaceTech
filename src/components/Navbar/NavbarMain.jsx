@@ -20,7 +20,7 @@ const NavbarMain = () => {
       <div className="container mx-auto">
         <div className="flex items-center h-14 px-4">
           {/* Left - Categories Button */}
-          <button className="bg-secondary text-white h-full px-6 flex items-center gap-2">
+          <button className="bg-secondary text-white h-full px-6 flex items-center gap-2 hidden lg:block">
             <span className="font-medium">TOP CATEGORIES</span>
             <Menu className="w-4 h-4" />
           </button>
@@ -37,7 +37,7 @@ const NavbarMain = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xl px-4">
+            <div className="flex-1 max-w-xl px-4 hidden lg:block">
               <div className="relative">
                 <input
                   type="text"
@@ -54,7 +54,7 @@ const NavbarMain = () => {
           {/* Right - Cart */}
           <Link 
             href="/cart" 
-            className="bg-secondary text-secondary-content h-full px-6 flex items-center gap-2 ml-auto"
+            className="bg-secondary text-secondary-content h-full px-6 flex items-center gap-2 ml-auto hidden lg:block"
           >
             <ShoppingCart className="w-5 h-5" />
             <div className="flex items-center gap-1">
