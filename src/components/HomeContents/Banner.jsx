@@ -32,8 +32,8 @@ const Banner = () => {
   ];
 
   return (
-    <div className="container mx-auto">
-      <div className="w-full h-[600px] bg-base-100 ">
+    <div className="container mx-auto mt-28">
+      <div className="w-full h-[600px] bg-red-500 ">
         
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
@@ -48,7 +48,7 @@ const Banner = () => {
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
-              <div className="flex items-center h-full px-4 md:px-20">
+              <div className="flex items-center h-full px-4 md:px-20 ">
                 <div className="w-full md:w-1/2 space-y-6">
                   <p className="text-secondary font-medium">{slide.subtitle}</p>
                   <h1 className="text-4xl md:text-6xl font-bold text-primary">

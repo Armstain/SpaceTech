@@ -20,7 +20,7 @@ const NavbarMain = () => {
       <div className="container mx-auto">
         <div className="flex items-center h-14 px-4">
           {/* Left - Categories Button */}
-          <button className="bg-secondary text-white h-full px-6 flex items-center gap-2 hidden lg:block">
+          <button className="bg-secondary text-white h-full px-6  items-center gap-2 hidden md:flex">
             <span className="font-medium">TOP CATEGORIES</span>
             <Menu className="w-4 h-4" />
           </button>

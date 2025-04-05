@@ -127,7 +127,7 @@ const NavbarMenu = () => {
   }
 
   return (
-    <div className="border-b relative">
+    <div className=" relative bg-red-500">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         {/* Mobile Menu Button */}
         <button 

@@ -23,7 +23,7 @@ const NavbarOffer = () => {
               </Link> */}
             </div>
 
-            <div className="flex items-center gap-4 hidden md:block">
+            <div className=" items-center gap-4 hidden md:flex">
               <Link href="/auth" className="hover:text-gray-600 flex items-center gap-1">
                 <User size={20} />
                 Sign in
