@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import NavbarOffer from "./NavbarOffer"
 import NavbarMenu from "./NavbarMenu"
 import NavbarMain from "./NavbarMain"
@@ -24,30 +25,76 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    window.addEventListener('scroll', controlNavbar)
-    return () => window.removeEventListener('scroll', controlNavbar)
-  }, [])
+    // Throttle the scroll event for better performance
+    let timeoutId = null;
+    const handleScroll = () => {
+      if (timeoutId === null) {
+        timeoutId = setTimeout(() => {
+          controlNavbar();
+          timeoutId = null;
+        }, 10);
+      }
+    };
 
-  // Calculate heights for positioning
-  const offerHeight = showOffer ? 'h-[40px]' : 'h-0'
-  const menuHeight = showMenu ? 'h-[65px]' : 'h-0'
-  const mainTop = `${showOffer ? 40 : 0}${showMenu ? 80 : 0}px`
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }, [lastScrollY])
 
   return (
     <>
-      {/* Space holder for the fixed navbar */}
-      <div className={`${offerHeight} ${menuHeight} h-[64px]`}></div>
+      {/* Spacer element that maintains layout as navbar items hide/show */}
+      <div style={{ height: `${(showOffer ? 40 : 0) + (showMenu ? 65 : 0) + 64}px` }}></div>
       
       <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
-        <div className={`overflow-hidden transition-all duration-300 ${offerHeight}`}>
-          <NavbarOffer />
-        </div>
-        <div className={`overflow-hidden transition-all duration-300 ${menuHeight}`}>
-          <NavbarMenu />
-        </div>
-        <div className="bg-white shadow-md">
-          <NavbarMain />
-        </div>
+        <AnimatePresence>
+          {showOffer && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 40, opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30 
+              }}
+              className="overflow-hidden"
+            >
+              <NavbarOffer />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <AnimatePresence>
+          {showMenu && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 65, opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                delay: showOffer ? 0.1 : 0 
+              }}
+              className="overflow-hidden"
+            >
+              <NavbarMenu />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <motion.div 
+          className="bg-white shadow-md"
+          animate={{ 
+            y: 0,
+            transition: { type: "spring", stiffness: 300, damping: 30 }
+          }}
+        >
+          <NavbarMain />  
+        </motion.div>
       </div>
     </>
   )

@@ -7,15 +7,15 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <div className="bg-base-200">
-      <div className="">
+   
+      <div className="bg-base-100">
       <Banner />
       <TopCategory />
       <FeaturedProducts />
       <LimitedOffer />
       <NewsLetter />
       </div>
-    </div>
+    
   );
 }
 
