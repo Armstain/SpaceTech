@@ -101,7 +101,7 @@ const NavbarMenu = () => {
       const isOpen = openMobileDropdowns[item.label] || false
       
       return (
-        <div key={item.label} className="border-b border-gray-100">
+        <div key={item.label} className="border-b border-gray-100 ">
           <button 
             className="flex items-center justify-between w-full py-3 px-4 text-lg hover:bg-gray-50 transition-colors duration-200"
             onClick={() => toggleMobileDropdown(item.label)}
@@ -143,7 +143,7 @@ const NavbarMenu = () => {
   }
 
   return (
-    <div className="relative bg-white z-20">
+    <div className="relative bg-white z-20 ">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         {/* Mobile Menu Button */}
         <button 
@@ -158,7 +158,7 @@ const NavbarMenu = () => {
         <Link href="/" className="flex items-center z-20">
           <h1 className='text-xl md:text-2xl lg:text-3xl font-bold'>
             <span className="text-primary">Space</span>
-            <span className="bg-primary text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded-md ml-0.5">Tech</span>
+            <span className="bg-secondary text-white px-1.5 md:px-2 py-0.5 md:py-1 rounded-md ml-0.5">Tech</span>
           </h1>
         </Link>
         
@@ -171,7 +171,7 @@ const NavbarMenu = () => {
         <div className="hidden md:flex items-center gap-2 text-base group transition-colors duration-300 hover:text-red-500">
           <Phone className="h-5 w-5 text-red-500 group-hover:scale-110 transition-transform duration-300" />
           <span className="group-hover:translate-x-1 transition-transform duration-300">
-            (+92) 0123 456 789
+          09639 420420
           </span>
         </div>
         

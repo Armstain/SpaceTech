@@ -15,8 +15,8 @@ module.exports = {
       themes: [
         {
           light: {
-            primary: "#2c2b49",
-            secondary: "#f20231",
+            primary: "#f1732a",
+            secondary: "##559bd0",
             "secondary-content": "#D6E6F0",
             tertiary: "#000000",
             accent: "#ffffff",

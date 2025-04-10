@@ -10,7 +10,7 @@ const NavbarOffer = () => {
         <div className="py-2 text-sm">
           <div className="container mx-auto flex justify-between items-center px-4">
             <div className="text-gray-600 hidden md:block">
-              Need help? call us : +8801717171717
+              Need help? call us : 09639 420420
             </div>
             
             <div className="flex items-center gap-2 text-center">

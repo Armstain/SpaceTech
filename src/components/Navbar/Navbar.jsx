@@ -11,14 +11,14 @@ const Navbar = () => {
   const { scrollY } = useScroll()
   
   useMotionValueEvent(scrollY, "change", (latest) => {
-    // Hide offer when scrolling down more than 300px
+    
     if (latest > 300) {
       setShowOffer(false)
     } else {
       setShowOffer(true)
     }
     
-    // Hide menu after offer, at 500px
+    
     if (latest > 600) {
       setShowMenu(false)
     } else {
@@ -45,13 +45,13 @@ const Navbar = () => {
         
         <motion.div 
           className="overflow-hidden"
-          animate={{ height: showMenu ? '65px' : '0px' }}
+          animate={{ height: showMenu ? '62px' : '0px' }}
           transition={{ duration: 0.3 }}
         >
           <NavbarMenu />
         </motion.div>
         
-        <div className="bg-white shadow-md">
+        <div className="bg-white shadow-md hidden md:block">
           <NavbarMain />  
         </div>
       </div>

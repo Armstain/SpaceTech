@@ -15,15 +15,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin className="text-secondary mt-1" size={20} />
-                <p>1093 Marigold lane,<br />coral way, miami,<br />florida, 33169</p>
+                <p>Dhaka, Bangladesh<br />1215</p>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="text-secondary" size={18} />
-                <p>610-403-403</p>
+                <p>09639 420420</p>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="text-secondary" size={20} />
-                <p>demo@demo.com</p>
+                <p>sales@spacetechbd.com</p>
               </div>
             </div>
           </div>

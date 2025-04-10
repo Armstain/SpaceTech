@@ -15,59 +15,36 @@ const features = [
   }
 ]
 
-// Expanded category data with subcategories
 const categoryData = [
   { 
     icon: <Laptop className="w-5 h-5" />, 
     label: 'Laptops & Computers', 
     href: '/category/laptops',
-    subcategories: [
-      { label: 'Gaming Laptops', href: '/category/laptops/gaming' },
-      { label: 'Ultrabooks', href: '/category/laptops/ultrabooks' },
-      { label: 'Desktop PCs', href: '/category/desktop' },
-      { label: 'Computer Parts', href: '/category/computer-parts' }
-    ]
+   
   },
   { 
     icon: <Smartphone className="w-5 h-5" />, 
     label: 'Smartphones & Tablets', 
     href: '/category/smartphones',
-    subcategories: [
-      { label: 'Android Phones', href: '/category/smartphones/android' },
-      { label: 'iPhones', href: '/category/smartphones/iphone' },
-      { label: 'iPads', href: '/category/tablets/ipad' },
-      { label: 'Android Tablets', href: '/category/tablets/android' }
-    ]
+    
   },
   { 
     icon: <Watch className="w-5 h-5" />, 
     label: 'Smartwatches', 
     href: '/category/smartwatches',
-    subcategories: [
-      { label: 'Apple Watch', href: '/category/smartwatches/apple' },
-      { label: 'Samsung Galaxy Watch', href: '/category/smartwatches/samsung' },
-      { label: 'Fitness Trackers', href: '/category/smartwatches/fitness' }
-    ]
+    
   },
   { 
     icon: <Headphones className="w-5 h-5" />, 
     label: 'Audio & Headphones', 
     href: '/category/audio',
-    subcategories: [
-      { label: 'Wireless Earbuds', href: '/category/audio/wireless-earbuds' },
-      { label: 'Over-ear Headphones', href: '/category/audio/over-ear' },
-      { label: 'Speakers', href: '/category/audio/speakers' }
-    ]
+   
   },
   { 
     icon: <Camera className="w-5 h-5" />, 
     label: 'Cameras & Photography', 
     href: '/category/cameras',
-    subcategories: [
-      { label: 'DSLR Cameras', href: '/category/cameras/dslr' },
-      { label: 'Mirrorless Cameras', href: '/category/cameras/mirrorless' },
-      { label: 'Camera Lenses', href: '/category/cameras/lenses' }
-    ]
+    
   }
 ]
 
@@ -86,27 +63,14 @@ const NavbarMain = () => {
           >
             <div className="py-2 w-64">
               {categoryData.map((category, index) => (
-                <Dropdown
+                <Link
                   key={index}
-                  trigger={
-                    <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition-colors w-full">
-                      <span className="text-secondary">{category.icon}</span>
-                      <span>{category.label}</span>
-                    </div>
-                  }
+                  href={category.href}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-200 transition-colors w-full text-base-content"
                 >
-                  <div className="py-2">
-                    {category.subcategories.map((subcat, idx) => (
-                      <Link
-                        key={idx}
-                        href={subcat.href}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
-                      >
-                        {subcat.label}
-                      </Link>
-                    ))}
-                  </div>
-                </Dropdown>
+                  <span className="text-base-content">{category.icon}</span>
+                  <span>{category.label}</span>
+                </Link>
               ))}
             </div>
           </Dropdown>
