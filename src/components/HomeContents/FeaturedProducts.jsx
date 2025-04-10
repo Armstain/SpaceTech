@@ -1,6 +1,11 @@
+'use client'
 import { ShoppingCart, Eye, Heart } from 'lucide-react';
+import { useState } from 'react';
+import ProductModal from '../modal/ProductModal';
 
 const FeaturedProducts = () => {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  
   const products = [
     {
       name: "Mixer grinder",
@@ -59,6 +64,14 @@ const FeaturedProducts = () => {
       image: "/images/harddrive.png"
     }
   ];
+  
+  const openProductModal = (product) => {
+    setSelectedProduct(product);
+  };
+  
+  const closeProductModal = () => {
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="bg-base-100">
@@ -80,7 +93,11 @@ const FeaturedProducts = () => {
                 <ShoppingCart size={20} />
               </button>
               
-              <button className="bg-white p-2 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200" title="Quick View">
+              <button 
+                className="bg-white p-2 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200" 
+                title="Quick View"
+                onClick={() => openProductModal(product)}
+              >
                 <Eye size={20} />
               </button>
               
@@ -114,6 +131,14 @@ const FeaturedProducts = () => {
         ))}
       </div>
     </div>
+    
+    {/* Product Quick View Modal */}
+    {selectedProduct && (
+      <ProductModal 
+        product={selectedProduct} 
+        onClose={closeProductModal} 
+      />
+    )}
     </div>
   );
 };
