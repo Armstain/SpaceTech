@@ -2,66 +2,100 @@
 import { ShoppingCart, Eye, Heart } from 'lucide-react';
 import { useState } from 'react';
 import ProductModal from '../modal/ProductModal';
+import Link from 'next/link';
+import product1 from '@/public/assets/1.jpg'
+import product2 from '@/public/assets/2.jpg'
+import product3 from '@/public/assets/3.jpg'
+import product4 from '@/public/assets/4.jpg'
+import product5 from '@/public/assets/5.jpg'
+import product6 from '@/public/assets/6.jpg'
+import Image from 'next/image';
+
+
 
 const FeaturedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   
   const products = [
     {
+      id: 1,
       name: "Mixer grinder",
+      slug: "mixer-grinder",
       currentPrice: 2500.00,
       originalPrice: 3500.00,
       discount: 29,
-      image: "/images/mixer.png"
+      image: product1,
+      inventory: 75,
+      sku: "mixer-29"
     },
     {
+      id: 2,
       name: "Smart watch",
+      slug: "smart-watch",
       currentPrice: 965.00,
       originalPrice: 1520.00,
       discount: 33,
-      image: "/images/smartwatch.png"
+      image: product2,
+      inventory: 85,
+      sku: "watch-33"
     },
     {
+      id: 3,
       name: "Air buds",
+      slug: "airbuds",
       currentPrice: 1000.00,
       originalPrice: 1650.00,
       discount: 22,
-      image: "/images/airbuds.png"
+      image: product3,
+      inventory: 90,
+      sku: "airbuds-22"
     },
     {
+      id: 4,
       name: "Hard drive",
+      slug: "harddrive",
       currentPrice: 325.00,
       originalPrice: 325.00,
       discount: 0,
-      image: "/images/harddrive.png"
+      image: product4,
+      inventory: 100,
+      sku: "harddrive-0"
     },
     {
+      id: 5,
       name: "Smart watch",
+      slug: "smart-watch",
       currentPrice: 965.00,
       originalPrice: 1520.00,
       discount: 33,
-      image: "/images/smartwatch.png"
+      image: product5
     },
     {
+      id: 6,
       name: "Air buds",
+      slug: "air-buds",
       currentPrice: 1000.00,
       originalPrice: 1650.00,
       discount: 22,
-      image: "/images/airbuds.png"
+      image: product6
     },
     {
+      id: 7,
       name: "Hard drive",
+      slug: "hard-drive",
       currentPrice: 325.00,
       originalPrice: 325.00,
       discount: 0,
-      image: "/images/harddrive.png"
+      image: product4
     },
     {
+      id: 8,
       name: "Hard drive",
+      slug: "hard-drive-2",
       currentPrice: 325.00,
       originalPrice: 325.00,
       discount: 25,
-      image: "/images/harddrive.png"
+      image: product4
     }
   ];
   
@@ -80,52 +114,78 @@ const FeaturedProducts = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product, index) => (
-          <div key={index} className="bg-base-300 rounded-lg p-6 relative group">
-            {product.discount > 0 && (
-              <div className="absolute top-4 left-4 bg-primary text-white text-sm px-2 py-1 rounded">
-                -{product.discount}%
+          <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group relative">
+            <div className="relative overflow-hidden">
+              {product.discount > 0 && (
+                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold uppercase px-3 py-1 rounded-full z-10">
+                  {product.discount}% OFF
+                </div>
+              )}
+              
+              <Link href={`/products/${product.slug}`} className="block cursor-pointer">
+                <div className="h-64 overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name} 
+                    width={300}
+                    height={300}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+              </Link>
+              
+              {/* Action Buttons Overlay */}
+              <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                <button className="bg-white p-3 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300" title="Add to Cart">
+                  <ShoppingCart size={18} />
+                </button>
+                
+                <button 
+                  className="bg-white p-3 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75" 
+                  title="Quick View"
+                  onClick={() => openProductModal(product)}
+                >
+                  <Eye size={18} />
+                </button>
+                
+                <button className="bg-white p-3 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150" title="Add to Wishlist">
+                  <Heart size={18} />
+                </button>
               </div>
-            )}
-            
-            {/* Action Icons */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button className="bg-white p-2 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200" title="Add to Cart">
-                <ShoppingCart size={20} />
-              </button>
-              
-              <button 
-                className="bg-white p-2 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200" 
-                title="Quick View"
-                onClick={() => openProductModal(product)}
-              >
-                <Eye size={20} />
-              </button>
-              
-              <button className="bg-white p-2 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200" title="Add to Wishlist">
-                <Heart size={20} />
-              </button>
             </div>
             
-            <div className="flex justify-center mb-6">
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-48 h-48 object-contain"
-              />
-            </div>
-
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">{product.name}</h3>
-              <div className="flex justify-center items-center gap-2">
-                <span className="text-secondary font-bold">
+            {/* Product Info */}
+            <div className="p-5">
+              <h3 className="text-lg font-semibold mb-2 hover:text-primary transition-colors duration-200">
+                <Link href={`/products/${product.slug}`}>
+                  {product.name}
+                </Link>
+              </h3>
+              
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-primary font-bold text-lg">
                   ${product.currentPrice.toFixed(2)}
                 </span>
                 {product.discount > 0 && (
-                  <span className="text-neutral line-through">
+                  <span className="text-gray-400 line-through text-sm">
                     ${product.originalPrice.toFixed(2)}
                   </span>
                 )}
               </div>
+              
+              {product.inventory && (
+                <div className="mt-2">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className="bg-primary h-1.5 rounded-full" 
+                      style={{ width: `${(product.inventory / 100) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {product.inventory > 50 ? 'In stock' : 'Low stock'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         ))}

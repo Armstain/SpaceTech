@@ -59,7 +59,7 @@ const Banner = () => {
         className="h-[60vh] md:h-[80vh]"
       >
         {slides.map((slide, index) => (
-          <SwiperSlide key={index} className="bg-gradient-to-r from-gray-900 to-gray-600 text-white mt-32">
+          <SwiperSlide key={index} className="bg-gradient-to-r from-gray-900 to-gray-600 text-white mt-10 md:mt-32">
             <div className="flex flex-col justify-center items-center h-full text-center px-4">
               <motion.h1 
                 initial={{ opacity: 0, y: -20 }}
@@ -98,3 +98,6 @@ const Banner = () => {
 };
 
 export default Banner;
+
+
+

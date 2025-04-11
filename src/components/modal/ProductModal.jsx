@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Truck } from 'lucide-react';
+import Image from 'next/image';
 
 const ProductModal = ({ product, onClose }) => {
   const [selectedColor, setSelectedColor] = useState('Black');
@@ -9,10 +10,7 @@ const ProductModal = ({ product, onClose }) => {
   // Mock product images (in a real app, these would come from the product data)
   const productImages = [
     product.image,
-    '/images/smartwatch-side.png',
-    '/images/smartwatch-back.png',
-    '/images/smartwatch-strap.png',
-    '/images/smartwatch-charging.png'
+    
   ];
   
   const nextImage = () => {
@@ -47,7 +45,7 @@ const ProductModal = ({ product, onClose }) => {
           {/* Left side - Product images */}
           <div className="relative">
             <div className="mb-6 bg-gray-100 rounded-lg p-4 flex items-center justify-center h-80">
-              <img 
+              <Image
                 src={productImages[currentImageIndex]} 
                 alt={product.name} 
                 className="max-h-full object-contain"
@@ -106,7 +104,7 @@ const ProductModal = ({ product, onClose }) => {
               <span className="font-semibold">Availability:</span>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span>119 in stock</span>
+                <span>{product.inventory} in stock</span>
               </div>
             </div>
             
