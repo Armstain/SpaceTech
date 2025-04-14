@@ -10,11 +10,12 @@ import product4 from '@/public/assets/4.jpg'
 import product5 from '@/public/assets/5.jpg'
 import product6 from '@/public/assets/6.jpg'
 import Image from 'next/image';
-
-
+import { useCart } from '@/context/CartContext';
+import { toast } from 'react-hot-toast';
 
 const FeaturedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addItem } = useCart();
   
   const products = [
     {
@@ -107,6 +108,25 @@ const FeaturedProducts = () => {
     setSelectedProduct(null);
   };
 
+  const handleAddToCart = (product, event) => {
+    event.stopPropagation();
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.currentPrice,
+      image: product.image.src,
+      quantity: 1
+    });
+    
+    // Show toast notification if you have toast set up
+    // If not, you can install react-hot-toast or any other library
+    if (typeof toast !== 'undefined') {
+      toast.success(`${product.name} added to cart!`);
+    } else {
+      alert(`${product.name} added to cart!`);
+    }
+  };
+
   return (
     <div className="bg-base-100">
       <div className="container mx-auto px-4 py-16">
@@ -136,7 +156,11 @@ const FeaturedProducts = () => {
               
               {/* Action Buttons Overlay */}
               <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                <button className="bg-white p-3 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300" title="Add to Cart">
+                <button 
+                  className="bg-white p-3 rounded-full shadow-md hover:bg-primary hover:text-white transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300" 
+                  title="Add to Cart"
+                  onClick={(e) => handleAddToCart(product, e)}
+                >
                   <ShoppingCart size={18} />
                 </button>
                 

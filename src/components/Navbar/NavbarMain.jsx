@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react'
 import { Search, ShoppingCart, Gift, CheckCircle, Menu, Laptop, Smartphone, Watch, Headphones, Camera, Monitor, Cpu, Keyboard, Printer, Gamepad } from 'lucide-react'
 import Link from 'next/link'
 import Dropdown from '@/components/ui/Dropdown'
+import { useCart } from '@/context/CartContext'
 
 const features = [
   {
@@ -49,6 +50,14 @@ const categoryData = [
 ]
 
 const NavbarMain = () => {
+  const { items, itemCount, subtotal } = useCart();
+  
+  // Format subtotal to display as currency
+  const formattedSubtotal = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(subtotal);
+  
   return (
     <div className='bg-primary text-primary-content relative z-10'>
       <div className="container mx-auto">
@@ -102,16 +111,72 @@ const NavbarMain = () => {
           </div>
 
           {/* Right - Cart */}
-          <Link 
-            href="/cart" 
-            className="bg-secondary text-secondary-content h-full px-6 items-center gap-2 ml-auto hidden md:flex"
+          <Dropdown
+            trigger={
+              <Link 
+                href="/cart" 
+                className="bg-secondary text-secondary-content h-full px-6 py-4 items-center gap-2 ml-auto hidden md:flex"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <div className="flex items-center gap-1">
+                  <span>{itemCount} {itemCount === 1 ? 'Item' : 'Items'}</span>
+                  <span>{formattedSubtotal}</span>
+                </div>
+              </Link>
+            }
           >
-            <ShoppingCart className="w-5 h-5" />
-            <div className="flex items-center gap-1">
-              <span>0 Item</span>
-              <span>$0.00</span>
+            <div className="p-4 w-80 text-black">
+              <h3 className="font-medium text-lg mb-3">Cart Preview</h3>
+              
+              {items.length === 0 ? (
+                <p className="text-gray-500">Your cart is empty</p>
+              ) : (
+                <>
+                  <div className="max-h-60 overflow-y-auto space-y-3">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 border-b pb-3">
+                        <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0">
+                          {item.image && (
+                            <img 
+                              src={item.image} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover rounded"
+                            />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{item.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {item.quantity} × ${item.price?.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t flex justify-between font-medium">
+                    <span>Subtotal:</span>
+                    <span>{formattedSubtotal}</span>
+                  </div>
+                  
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Link 
+                      href="/cart" 
+                      className="bg-secondary/80 hover:bg-secondary text-secondary-content py-2 px-4 rounded text-center transition-colors"
+                    >
+                      View Cart
+                    </Link>
+                    <Link 
+                      href="/checkout" 
+                      className="bg-primary/80 hover:bg-primary text-primary-content py-2 px-4 rounded text-center transition-colors"
+                    >
+                      Checkout
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
-          </Link>
+          </Dropdown>
         </div>
       </div>
     </div>

@@ -1,11 +1,14 @@
+'use client'
 import React, { useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Truck } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Truck, Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
+import { useCart } from '@/context/CartContext';
 
 const ProductModal = ({ product, onClose }) => {
   const [selectedColor, setSelectedColor] = useState('Black');
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { addItem } = useCart();
   
   // Mock product images (in a real app, these would come from the product data)
   const productImages = [
@@ -21,19 +24,44 @@ const ProductModal = ({ product, onClose }) => {
     setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
   };
   
-  const increaseQuantity = () => {
-    setQuantity(prev => prev + 1);
+  const handleQuantityDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
   };
   
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
+  const handleQuantityIncrease = () => {
+    setQuantity(quantity + 1);
+  };
+  
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.currentPrice,
+      image: product.image.src,
+      quantity: quantity
+    });
+    
+    // Optional: close modal after adding to cart
+    onClose();
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={handleOverlayClick}
+    >
+      <div 
+        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 z-10"
@@ -130,7 +158,7 @@ const ProductModal = ({ product, onClose }) => {
               <div className="font-semibold mb-2">Quantity:</div>
               <div className="flex items-center">
                 <button 
-                  onClick={decreaseQuantity}
+                  onClick={handleQuantityDecrease}
                   className="border border-gray-300 w-10 h-10 flex items-center justify-center text-xl"
                 >
                   -
@@ -139,7 +167,7 @@ const ProductModal = ({ product, onClose }) => {
                   {quantity}
                 </div>
                 <button 
-                  onClick={increaseQuantity}
+                  onClick={handleQuantityIncrease}
                   className="border border-gray-300 w-10 h-10 flex items-center justify-center text-xl"
                 >
                   +
@@ -148,8 +176,12 @@ const ProductModal = ({ product, onClose }) => {
             </div>
             
             <div className="flex gap-4 mb-6">
-              <button className="bg-primary text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-dark transition">
-                ADD TO CART
+              <button 
+                onClick={handleAddToCart}
+                className="bg-primary text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-dark transition"
+              >
+                <ShoppingCart size={20} className="mr-2" />
+                Add to Cart
               </button>
               <button className="bg-primary text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-dark transition">
                 BUY IT NOW
