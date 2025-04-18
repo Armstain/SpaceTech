@@ -120,7 +120,7 @@ const NavbarMain = () => {
                 <ShoppingCart className="w-5 h-5" />
                 <div className="flex items-center gap-1">
                   <span>{itemCount} {itemCount === 1 ? 'Item' : 'Items'}</span>
-                  <span>{formattedSubtotal}</span>
+                  {/* <span>{formattedSubtotal}</span> */}
                 </div>
               </Link>
             }

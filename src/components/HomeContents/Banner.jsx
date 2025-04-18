@@ -57,7 +57,7 @@ const deals = [
     originalPrice: 999.99,
     salePrice: 749.99,
     discount: 25,
-    imageSrc: "/api/placeholder/600/400",
+    imageSrc: image1,
     imageAlt: "Latest Smartphone Model",
     expiryHours: 12,
   },
