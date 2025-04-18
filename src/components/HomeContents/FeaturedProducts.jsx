@@ -118,8 +118,7 @@ const FeaturedProducts = () => {
       quantity: 1
     });
     
-    // Show toast notification if you have toast set up
-    // If not, you can install react-hot-toast or any other library
+    // Show toast notification 
     if (typeof toast !== 'undefined') {
       toast.success(`${product.name} added to cart!`);
     } else {

@@ -7,6 +7,7 @@ const Dropdown = ({ trigger, children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
+  const contentRef = useRef(null);
   
   //  debounce 
   const toggleTimeout = useRef(null);
@@ -24,10 +25,20 @@ const Dropdown = ({ trigger, children }) => {
   // Calculate position once when opening
   useEffect(() => {
     if (isOpen && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
+      const triggerRect = dropdownRef.current.getBoundingClientRect();
+      const contentRect = contentRef.current?.getBoundingClientRect();
+      const windowWidth = window.innerWidth;
+      
+      let left = triggerRect.left;
+      
+      // If dropdown would extend beyond right edge of window, align to right
+      if (contentRect && left + contentRect.width > windowWidth - 10) {
+        left = Math.max(10, triggerRect.right - contentRect.width);
+      }
+      
       setPosition({
-        top: rect.bottom,
-        left: rect.left,
+        top: triggerRect.bottom,
+        left: left,
       });
     }
   }, [isOpen]);
@@ -54,6 +65,7 @@ const Dropdown = ({ trigger, children }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={contentRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

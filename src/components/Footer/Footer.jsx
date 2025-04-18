@@ -5,7 +5,7 @@ import { FaCcVisa, FaCcPaypal, FaCcMastercard, FaCcAmex } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="bg-base-200 pt-16 pb-4">
+    <footer className="bg-base-200 pt-16 pb-4 border-t border-gray-200">
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
