@@ -19,9 +19,13 @@ import {
   Modules,
   ProductStatus,
 } from "@medusajs/framework/utils";
+import { PaymentModule, RegionModule } from "@medusajs/medusa";
+import { resolve } from "path";
+
+const MODULES_SCOPE = process.env.MODULES_SCOPE || "@medusajs";
 
 export default async function seedDemoData({ container }: ExecArgs) {
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
+  const logger = container.resolve("logger");
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
   const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
@@ -854,4 +858,55 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
 
   logger.info("Finished seeding inventory levels data.");
+
+  console.log("Seeding database...")
+  
+  try {
+    // Initialize modules
+    const moduleLoader = new Modules({
+      publishableApiKeys: {
+        scope: MODULES_SCOPE,
+      },
+      regionModule: {
+        scope: MODULES_SCOPE,
+      },
+      paymentModule: {
+        scope: MODULES_SCOPE,
+      },
+    }, {
+      modulesPath: resolve(__dirname, "../modules"),
+    })
+
+    const modules = await moduleLoader.load()
+    
+    try {
+      // Add USD currency
+      const regionModule = modules.regionModule as RegionModule
+      await regionModule.create({
+        name: "Global",
+        currency_code: "usd",
+        tax_rate: 0,
+        countries: ["us"]
+      })
+      
+      console.log("Added default region with USD currency")
+      
+      // Add default payment provider
+      const paymentModule = modules.paymentModule as PaymentModule
+      await paymentModule.registerProvider({
+        id: "manual",
+        is_installed: true
+      })
+      
+      console.log("Added manual payment provider")
+
+      console.log("Seed completed successfully")
+    } catch (error) {
+      console.error("Error during seed:", error)
+    }
+  } catch (err) {
+    console.error("Failed to initialize modules for seeding:", err)
+  } finally {
+    process.exit(0)
+  }
 }

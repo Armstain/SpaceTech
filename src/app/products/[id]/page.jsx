@@ -1,27 +1,77 @@
-// Move data fetching to a separate file
+'use client';
+
 import { ProductActions } from '@/components/product/ProductActions';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductTabs } from '@/components/product/ProductTabs';
-import { getProductBySlug } from '@/lib/products';
-
 import Link from 'next/link';
+import useProduct from '@/lib/hooks/useProduct';
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-export async function generateMetadata({ params }) {
-  const product = await getProductBySlug(params.slug);
-  return {
-    title: `${product.name} - Your Store`,
-    description: `Buy ${product.name} - Features high-resolution display and long battery life.`
-  };
-}
+export default function ProductPage() {
+  const params = useParams();
+  const { product, isLoading, error } = useProduct(params.id);
+  const [metaSet, setMetaSet] = useState(false);
+  
+  // Set page metadata when product is loaded
+  useEffect(() => {
+    if (product && !metaSet) {
+      document.title = `${product.name} - Your Store`;
+      
+      // Update meta description
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.name = 'description';
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.content = `Buy ${product.name} - Features high-resolution display and long battery life.`;
+      
+      setMetaSet(true);
+    }
+  }, [product, metaSet]);
 
-export default async function ProductPage({ params }) {
-  const product = await getProductBySlug(params.slug);
-  
-  
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500 min-h-[60vh] flex flex-col justify-center">
+          <h2 className="text-2xl font-bold mb-4">Error Loading Product</h2>
+          <p>{error}</p>
+          <Link href="/" className="mt-6 text-primary hover:underline">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center min-h-[60vh] flex flex-col justify-center">
+          <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
+          <p>Sorry, we couldn't find the product you're looking for.</p>
+          <Link href="/" className="mt-6 text-primary hover:underline">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Breadcrumb - stays in server component */}
+      {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm mb-8">
         <Link href="/" className="hover:text-primary">Home</Link>
         <span>/</span>
@@ -32,7 +82,7 @@ export default async function ProductPage({ params }) {
         <ProductGallery product={product} />
         
         <div>
-          {/* Static product details */}
+          {/* Product details */}
           <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
           
           <div className="flex items-center gap-2 mb-6">
@@ -52,19 +102,21 @@ export default async function ProductPage({ params }) {
           </div>
 
           <p className="text-gray-600 mb-6">
-            The {product.name} features a high-resolution display that's visible even in bright sunlight.
-            With the latest hardware, it delivers smooth performance for all your daily tasks.
-            Its battery life ensures you can go days without needing to charge.
+            {product.description || 
+              `The ${product.name} features a high-resolution display that's visible even in bright sunlight.
+              With the latest hardware, it delivers smooth performance for all your daily tasks.
+              Its battery life ensures you can go days without needing to charge.`
+            }
           </p>
 
-          {/* Interactive elements - client component */}
+          {/* Interactive elements */}
           <ProductActions
             product={product}
           />
 
           {/* Static elements */}
           <div className="mb-6">
-            <span className="font-semibold">Sku:</span> {product.sku}
+            <span className="font-semibold">Sku:</span> {product.sku || 'N/A'}
           </div>
           
           {/* Payment methods */}
@@ -77,7 +129,7 @@ export default async function ProductPage({ params }) {
         </div>
       </div>
       
-      {/* Tabs section - client component */}
+      {/* Tabs section */}
       <ProductTabs product={product} />
     </div>
   );
