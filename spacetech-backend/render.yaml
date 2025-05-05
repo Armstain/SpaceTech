@@ -3,21 +3,21 @@ services:
     name: spacetech-medusa
     env: node
     buildCommand: npm install && npx medusa db:migrate && npx medusa build
-    startCommand: node .medusa/server/index.js
+    startCommand: node start.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: DISABLE_MEDUSA_ADMIN
         value: "true"
+      - key: ADMIN_CORS
+        sync: false
+      - key: AUTH_CORS
+        sync: false
+      - key: COOKIE_SECRET
+        sync: false
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: COOKIE_SECRET
-        sync: false
       - key: MEDUSA_BACKEND_URL
-        sync: false
-      - key: ADMIN_CORS
-        sync: false
-      - key: AUTH_CORS
         sync: false 
