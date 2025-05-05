@@ -2,14 +2,12 @@ services:
   - type: web
     name: spacetech-medusa
     env: node
-    buildCommand: npm install && npm run build && npm run migrations
+    buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
-      - key: REDIS_URL
         sync: false
       - key: JWT_SECRET
         sync: false
