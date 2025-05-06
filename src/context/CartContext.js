@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useReducer, useEffect } from 'react'
+import { normalizeProduct } from '@/lib/utils/product-helpers'
 
 // Cart context with initial empty state
 const CartContext = createContext(null)
@@ -92,7 +93,19 @@ export function CartProvider({ children }) {
   }, [state])
   
   // Cart actions
-  const addItem = (item) => dispatch({ type: 'ADD_ITEM', payload: item })
+  const addItem = (item) => {
+    // For products, we need to normalize and extract only what we need for the cart
+    const normalizedItem = {
+      id: item.id,
+      name: item.name || item.title,
+      price: item.currentPrice || item.price || 0,
+      image: item.image || (item.images && item.images.length > 0 ? item.images[0] : null),
+      quantity: item.quantity || 1
+    };
+    
+    dispatch({ type: 'ADD_ITEM', payload: normalizedItem });
+  };
+  
   const removeItem = (itemId) => dispatch({ type: 'REMOVE_ITEM', payload: itemId })
   const updateQuantity = (itemId, quantity) => 
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id: itemId, quantity } })

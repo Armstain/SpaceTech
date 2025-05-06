@@ -39,7 +39,7 @@ const ProductModal = ({ product, onClose }) => {
       id: product.id,
       name: product.name,
       price: product.currentPrice,
-      image: product.image.src,
+      image: typeof product.image === 'object' && product.image.src ? product.image.src : product.image,
       quantity: quantity
     });
     

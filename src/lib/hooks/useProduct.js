@@ -1,47 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { normalizeProduct } from '@/lib/utils/product-helpers';
 
 /**
- * Custom hook to fetch a single product by slug
- * @param {string} slug - Product slug
+ * Custom hook to fetch a single product by id
+ * @param {string} id - Product id
  * @returns {Object} - Product data and loading state
  */
-export default function useProduct(slug) {
+export default function useProduct(id) {
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!slug) return;
-      
+    async function fetchProduct() {
+      if (!id) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
-        setError(null);
-        
-        // Fetch product from our API
-        const response = await fetch(`/api/products/${slug}`);
+        const response = await fetch(`/api/products/${id}`);
+        const data = await response.json();
         
         if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Product not found');
-          }
-          throw new Error(`Error fetching product: ${response.statusText}`);
+          throw new Error(data.error || 'Failed to fetch product');
         }
         
-        const data = await response.json();
-        setProduct(data);
+        // Transform product data for frontend use using the normalizer
+        const formattedProduct = normalizeProduct(data.product);
+        
+        setProduct(formattedProduct);
+        setIsLoading(false);
       } catch (err) {
-        console.error('Failed to fetch product:', err);
+        console.error("Error fetching product:", err);
         setError(err.message);
-      } finally {
         setIsLoading(false);
       }
-    };
+    }
     
     fetchProduct();
-  }, [slug]);
+  }, [id]);
   
   return { product, isLoading, error };
 } 
