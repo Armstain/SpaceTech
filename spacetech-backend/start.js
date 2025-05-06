@@ -2,6 +2,18 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Patch for buffer-equal-constant-time in Node.js 20+
+// This package uses SlowBuffer which is deprecated
+global.SlowBuffer = Buffer.from;
+if (!global.SlowBuffer.prototype) {
+  global.SlowBuffer.prototype = {};
+}
+if (!global.SlowBuffer.prototype.equal) {
+  global.SlowBuffer.prototype.equal = function(other) {
+    return Buffer.compare(this, other) === 0;
+  };
+}
+
 // Ensure the admin directory exists to prevent errors
 const adminDir = path.join(__dirname, '.medusa/server/public/admin');
 if (!fs.existsSync(adminDir)) {
