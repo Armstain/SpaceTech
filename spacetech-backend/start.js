@@ -10,12 +10,20 @@ if (!fs.existsSync(adminDir)) {
   fs.writeFileSync(path.join(adminDir, 'index.html'), '<!-- Placeholder file -->');
 }
 
+// Check if we're running a command that needs admin access
+const isAdminCommand = process.argv.length > 2 && 
+                      (process.argv.includes('exec') || 
+                       process.argv.includes('seed') || 
+                       process.argv.includes('migrations'));
+
 console.log('Starting Medusa server...');
 const medusaProcess = spawn('node', ['.medusa/server/index.js'], {
   stdio: 'inherit',
   env: {
     ...process.env,
     DISABLE_MEDUSA_ADMIN: 'true',
+    // Set NODE_ENV to development if we're running admin commands
+    ...(isAdminCommand && { NODE_ENV: 'development' })
   }
 });
 
