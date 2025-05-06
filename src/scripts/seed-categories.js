@@ -28,7 +28,7 @@ const categories = [
   },
   {
     name: 'Sports & Fitness',
-    description: 'Equipment and accessories for sports and fitness activities',
+    description: 'Equipment and accessories for sports and fitness activties',
     is_active: true,
     created_at: new Date(),
     updated_at: new Date()
