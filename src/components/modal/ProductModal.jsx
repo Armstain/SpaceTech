@@ -73,13 +73,20 @@ const ProductModal = ({ product, onClose }) => {
           {/* Left side - Product images */}
           <div className="relative">
             <div className="mb-6 bg-gray-100 rounded-lg p-4 flex items-center justify-center h-80">
-              <Image
-                src={productImages[currentImageIndex]} 
-                alt={product.name} 
-                className="max-h-full object-contain"
-                width={800}
-                height={600}
-              />
+              {productImages && productImages[currentImageIndex] && typeof productImages[currentImageIndex] === 'string' && productImages[currentImageIndex].length > 0 ? (
+                <Image
+                  src={productImages[currentImageIndex]} 
+                  alt={product.name || 'Product image'} 
+                  className="max-h-full object-contain"
+                  width={800}
+                  height={600}
+                  unoptimized={productImages[currentImageIndex].startsWith('blob:')}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full w-full">
+                  <p className="text-gray-500">No image available</p>
+                </div>
+              )}
               
               <button 
                 onClick={prevImage}
@@ -104,13 +111,20 @@ const ProductModal = ({ product, onClose }) => {
                   className={`border-2 p-1 rounded ${currentImageIndex === index ? 'border-primary' : 'border-gray-200'}`}
                   onClick={() => setCurrentImageIndex(index)}
                 >
-                 <Image
-                 src={img}
-                 alt={product.name}
-                 className="h-16 w-16 object-contain"
-                 width={800}
-                 height={600}
-                 />
+                 {img && typeof img === 'string' && img.length > 0 ? (
+                   <Image
+                     src={img}
+                     alt={product.name || `Product thumbnail ${index + 1}`}
+                     className="h-16 w-16 object-contain"
+                     width={800}
+                     height={600}
+                     unoptimized={img.startsWith('blob:')}
+                   />
+                 ) : (
+                   <div className="h-16 w-16 bg-gray-200 flex items-center justify-center">
+                     <p className="text-gray-500 text-xs">No image</p>
+                   </div>
+                 )}
                 </button>
               ))}
             </div>

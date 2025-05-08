@@ -214,18 +214,33 @@ const Banner = () => {
                     className="relative w-full h-64 md:h-80"
                   >
                     <div className="relative w-full h-full">
-                      <Image 
-                        src={deal.imageSrc} 
-                        alt={deal.imageAlt}
-                        fill
-                        className="object-contain"
-                      />
+                      {deal && deal.image && deal.image.url && typeof deal.image.url === 'string' && deal.image.url.length > 0 ? (
+                        <Image 
+                          src={deal.image.url} 
+                          alt={deal.imageAlt || 'Banner image'}
+                          fill
+                          className="object-contain"
+                        />
+                      ) : deal && deal.imageSrc && typeof deal.imageSrc === 'string' && deal.imageSrc.length > 0 ? (
+                        <Image 
+                          src={deal.imageSrc} 
+                          alt={deal.imageAlt || 'Banner image'}
+                          fill
+                          className="object-contain"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                          <p className="text-gray-500">No image available</p>
+                        </div>
+                      )}
                       
                       {/* Discount badge */}
-                      <div className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-center z-10 ">
-                        <span className="font-bold text-xl leading-none">{deal.discount}%</span>
-                        <span className="text-xs font-medium">OFF</span>
-                      </div>
+                      {deal && deal.discount && (
+                        <div className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-center z-10 ">
+                          <span className="font-bold text-xl leading-none">{deal.discount}%</span>
+                          <span className="text-xs font-medium">OFF</span>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 </div>

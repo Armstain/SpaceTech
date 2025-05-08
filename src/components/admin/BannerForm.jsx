@@ -27,7 +27,9 @@ export default function BannerForm({ banner, isEditing = false }) {
       originalPrice: '',
       salePrice: '',
       discount: 0,
-      imageSrc: '',
+      imageFile: null,
+      imageUrl: '',
+      imagePublicId: '',
       imageAlt: '',
       expiryHours: 24,
       isActive: true,
@@ -40,7 +42,7 @@ export default function BannerForm({ banner, isEditing = false }) {
       // Populate form with banner data using React Hook Form's setValue
       const fields = [
         'title', 'description', 'originalPrice', 'salePrice', 'discount',
-        'imageSrc', 'imageAlt', 'expiryHours', 'isActive', 'order'
+        'imageAlt', 'expiryHours', 'isActive', 'order'
       ];
       
       fields.forEach(field => {
@@ -51,9 +53,11 @@ export default function BannerForm({ banner, isEditing = false }) {
           field === 'order' ? 0 : '');
       });
       
-      // Set preview image if available
-      if (banner.imageSrc) {
-        setPreviewImage(banner.imageSrc);
+      // Set image data if available
+      if (banner.image && banner.image.url) {
+        setValue('imageUrl', banner.image.url);
+        setValue('imagePublicId', banner.image.publicId);
+        setPreviewImage(banner.image.url);
       }
     }
   }, [isEditing, banner, setValue]);
@@ -64,14 +68,12 @@ export default function BannerForm({ banner, isEditing = false }) {
     const file = e.target.files[0];
     if (!file) return;
     
-    // In a real application, you would upload the file to your storage service
-    // For now, we'll just create a local URL for preview
+    // Create a local URL for preview
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
     
-    // In a real app, you would get the URL from your storage service
-    // For demo purposes, we'll use the local URL
-    setValue('imageSrc', imageUrl);
+    // Store the file for later upload
+    setValue('imageFile', file);
     
     // Set image alt text to file name if it's empty
     const currentAlt = getValues('imageAlt');
@@ -84,7 +86,8 @@ export default function BannerForm({ banner, isEditing = false }) {
 
   const onSubmit = async (data) => {
     // Validate image
-    if (!data.imageSrc) {
+    if (!data.imageFile && !data.imageUrl) {
+      setServerError('Please upload an image for the banner');
       return;
     }
     
@@ -92,13 +95,44 @@ export default function BannerForm({ banner, isEditing = false }) {
     setServerError('');
     
     try {
+      let imageData = {
+        url: data.imageUrl,
+        publicId: data.imagePublicId
+      };
+      
+      // If there's a new image file, upload it to Cloudinary
+      if (data.imageFile) {
+        const formData = new FormData();
+        formData.append('file', data.imageFile);
+        formData.append('folder', 'banners');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload image');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        imageData = {
+          url: uploadResult.url,
+          publicId: uploadResult.publicId
+        };
+      }
+      
       // Prepare the banner data
       const bannerData = {
-        ...data,
+        title: data.title,
+        description: data.description,
         originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
         salePrice: Number(data.salePrice),
         discount: Number(data.discount),
+        image: imageData,
+        imageAlt: data.imageAlt,
         expiryHours: Number(data.expiryHours),
+        isActive: data.isActive,
         order: Number(data.order)
       };
       
@@ -211,7 +245,7 @@ export default function BannerForm({ banner, isEditing = false }) {
                   Upload Image*
                 </label>
                 <div className={`border-2 border-dashed rounded-lg p-4 text-center ${
-                  errors.imageSrc ? 'border-red-300' : 'border-gray-300'
+                  errors.imageFile ? 'border-red-300' : 'border-gray-300'
                 }`}>
                   <input
                     type="file"
@@ -234,24 +268,31 @@ export default function BannerForm({ banner, isEditing = false }) {
                     </span>
                   </label>
                 </div>
-                {errors.imageSrc && (
-                  <p className="mt-1 text-sm text-red-600 error-message">{errors.imageSrc}</p>
+                {errors.imageFile && (
+                  <p className="mt-1 text-sm text-red-600 error-message">{errors.imageFile.message}</p>
                 )}
               </div>
               
-              {previewImage && (
+              {previewImage ? (
                 <div className="mt-4">
                   <h3 className="font-medium text-gray-700 mb-2">Preview</h3>
                   <div className="relative h-64 w-full rounded-md overflow-hidden border border-gray-200">
-                    <Image
-                      src={previewImage}
-                      alt="Banner preview"
-                      fill
-                      className="object-contain"
-                    />
+                    {typeof previewImage === 'string' && previewImage.length > 0 ? (
+                      <Image
+                        src={previewImage}
+                        alt="Banner preview"
+                        fill
+                        className="object-contain"
+                        unoptimized={previewImage.startsWith('blob:')}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                        <p className="text-gray-500">Image preview not available</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              ) : null}
               
               <div>
                 <label htmlFor="imageAlt" className="block text-sm font-medium text-gray-700 mb-1">

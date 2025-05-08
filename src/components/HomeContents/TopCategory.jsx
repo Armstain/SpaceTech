@@ -62,12 +62,25 @@ const TopCategory = () => {
               <h3 className="text-2xl font-bold mt-2">{mainCategory.name}</h3>
               <div className="text-3xl font-bold text-secondary mt-2">${mainCategory.price.toFixed(2)}</div>
               <div className="mt-4 w-full h-64 relative">
-                <Image 
-                  src={mainCategory.imageSrc} 
-                  alt={mainCategory.name} 
-                  className="object-contain"
-                  fill
-                />
+                {mainCategory && mainCategory.image && mainCategory.image.url && typeof mainCategory.image.url === 'string' && mainCategory.image.url.length > 0 ? (
+                  <Image 
+                    src={mainCategory.image.url} 
+                    alt={mainCategory.name || 'Category image'} 
+                    className="object-contain"
+                    fill
+                  />
+                ) : mainCategory && mainCategory.imageSrc && typeof mainCategory.imageSrc === 'string' && mainCategory.imageSrc.length > 0 ? (
+                  <Image 
+                    src={mainCategory.imageSrc} 
+                    alt={mainCategory.name || 'Category image'} 
+                    className="object-contain"
+                    fill
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                    <p className="text-gray-500">No image available</p>
+                  </div>
+                )}
               </div>
               <button className="bg-secondary p-3 rounded-lg mt-4">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-6 h-6">
@@ -85,12 +98,25 @@ const TopCategory = () => {
             >
               <h3 className="font-semibold mb-4">{category.name}</h3>
               <div className="w-24 h-24 relative">
-                <Image 
-                  src={category.imageSrc} 
-                  alt={category.name} 
-                  className="object-contain"
-                  fill
-                />
+                {category && category.image && category.image.url && typeof category.image.url === 'string' && category.image.url.length > 0 ? (
+                  <Image 
+                    src={category.image.url} 
+                    alt={category.name || 'Category image'} 
+                    className="object-contain"
+                    fill
+                  />
+                ) : category && category.imageSrc && typeof category.imageSrc === 'string' && category.imageSrc.length > 0 ? (
+                  <Image 
+                    src={category.imageSrc} 
+                    alt={category.name || 'Category image'} 
+                    className="object-contain"
+                    fill
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                    <p className="text-gray-500 text-xs">No image</p>
+                  </div>
+                )}
               </div>
               <div className="mt-4 font-semibold">${category.price.toFixed(2)}</div>
             </div>

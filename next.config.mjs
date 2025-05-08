@@ -6,6 +6,11 @@ const nextConfig = {
         //     'medusa-public-images.s3.eu-west-1.amazonaws.com',
         //     'localhost'
         // ],
+        domains: [
+            'res.cloudinary.com',
+            'images.unsplash.com',
+            'localhost'
+        ],    
         remotePatterns: [
             {
                 protocol: 'https',

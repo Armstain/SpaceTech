@@ -41,7 +41,13 @@ export default function DebugPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Medusa Debug Page</h1>
+      <h1 className="text-3xl font-bold mb-8">Debug Page</h1>
+      
+      <div className="mb-8 flex space-x-4">
+        <Link href="/debug/cloudinary-test" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          Test Cloudinary Integration
+        </Link>
+      </div>
       
       {isLoading ? (
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>

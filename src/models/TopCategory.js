@@ -10,8 +10,17 @@ const TopCategorySchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please provide a price for this category.'],
   },
-  imageSrc: {
-    type: String,
+  image: {
+    type: {
+      url: {
+        type: String,
+        required: [true, 'Please provide an image URL for this category.']
+      },
+      publicId: {
+        type: String,
+        required: [true, 'Please provide an image public ID for this category.']
+      }
+    },
     required: [true, 'Please provide an image for this category.'],
   },
   backgroundColor: {

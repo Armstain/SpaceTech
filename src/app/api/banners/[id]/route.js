@@ -6,7 +6,9 @@ export async function GET(request, { params }) {
   try {
     await connectToDatabase();
     
-    const { id } = params;
+    // Get params asynchronously
+    const id = params.id;
+    
     const banner = await Banner.findById(id);
     
     if (!banner) {
@@ -24,12 +26,38 @@ export async function PUT(request, { params }) {
   try {
     await connectToDatabase();
     
-    const { id } = params;
+    // Get params asynchronously
+    const id = params.id;
     const data = await request.json();
+    
+    // Validate image data
+    if (!data.image || !data.image.url || !data.image.publicId) {
+      return NextResponse.json(
+        { success: false, message: 'Image URL and publicId are required' },
+        { status: 400 }
+      );
+    }
+    
+    const updateData = {
+      title: data.title,
+      description: data.description,
+      originalPrice: data.originalPrice,
+      salePrice: data.salePrice,
+      discount: data.discount,
+      image: {
+        url: data.image.url,
+        publicId: data.image.publicId
+      },
+      imageAlt: data.imageAlt,
+      expiryHours: data.expiryHours,
+      isActive: data.isActive !== undefined ? data.isActive : true,
+      order: data.order || 0,
+      updated_at: Date.now()
+    };
     
     const banner = await Banner.findByIdAndUpdate(
       id,
-      { ...data, updated_at: Date.now() },
+      updateData,
       { new: true, runValidators: true }
     );
     
@@ -40,7 +68,10 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ banner }, { status: 200 });
   } catch (error) {
     console.error('Error updating banner:', error);
-    return NextResponse.json({ error: 'Failed to update banner' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to update banner',
+      message: error.message 
+    }, { status: 500 });
   }
 }
 
@@ -48,12 +79,26 @@ export async function PATCH(request, { params }) {
   try {
     await connectToDatabase();
     
-    const { id } = params;
+    // Get params asynchronously
+    const id = params.id;
     const data = await request.json();
+    
+    // Prepare update data
+    const updateData = { ...data, updated_at: Date.now() };
+    
+    // If image data is provided, ensure it has both url and publicId
+    if (data.image) {
+      if (!data.image.url || !data.image.publicId) {
+        return NextResponse.json(
+          { success: false, message: 'If updating image, both URL and publicId are required' },
+          { status: 400 }
+        );
+      }
+    }
     
     const banner = await Banner.findByIdAndUpdate(
       id,
-      { ...data, updated_at: Date.now() },
+      updateData,
       { new: true, runValidators: true }
     );
     
@@ -64,7 +109,10 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ banner }, { status: 200 });
   } catch (error) {
     console.error('Error updating banner:', error);
-    return NextResponse.json({ error: 'Failed to update banner' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to update banner',
+      message: error.message 
+    }, { status: 500 });
   }
 }
 
@@ -72,7 +120,9 @@ export async function DELETE(request, { params }) {
   try {
     await connectToDatabase();
     
-    const { id } = params;
+    // Get params asynchronously
+    const id = params.id;
+    
     const banner = await Banner.findByIdAndDelete(id);
     
     if (!banner) {

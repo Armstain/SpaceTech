@@ -54,7 +54,7 @@ export default function ProductForm({ product, isEditing = false }) {
       // Populate form with product data using React Hook Form's setValue
       const fields = [
         'title', 'slug', 'description', 'price', 'originalPrice', 'discount',
-        'category', 'status', 'inventory', 'isFeatured', 'images', 'image'
+        'category', 'status', 'inventory', 'isFeatured'
       ];
       
       fields.forEach(field => {
@@ -64,12 +64,14 @@ export default function ProductForm({ product, isEditing = false }) {
       // Set preview images if available
       if (product.images && product.images.length > 0) {
         setPreviewImages(product.images.map(img => ({
-          url: img,
+          url: img.url || img, // Handle both old format and new format with publicId
+          publicId: img.publicId || '',
           file: null
         })));
       } else if (product.image) {
         setPreviewImages([{
-          url: product.image,
+          url: typeof product.image === 'string' ? product.image : product.image.url,
+          publicId: typeof product.image === 'string' ? '' : (product.image.publicId || ''),
           file: null
         }]);
       }
@@ -145,15 +147,33 @@ export default function ProductForm({ product, isEditing = false }) {
     setPreviewImages(prev => [...prev, ...newPreviewImages]);
   };
 
-  const removeImage = (index) => {
+  const removeImage = async (index) => {
+    const imageToRemove = previewImages[index];
+    
+    // Revoke object URL to prevent memory leaks if it's a local file
+    if (imageToRemove.file) {
+      URL.revokeObjectURL(imageToRemove.url);
+    }
+    
+    // If this is a Cloudinary image with a publicId, delete it from Cloudinary
+    if (imageToRemove.publicId && !imageToRemove.file) {
+      try {
+        await fetch('/api/upload/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ publicId: imageToRemove.publicId }),
+        });
+        console.log(`Deleted image with publicId: ${imageToRemove.publicId}`);
+      } catch (error) {
+        console.error('Error deleting image from Cloudinary:', error);
+      }
+    }
+    
+    // Remove the image from the preview list
     setPreviewImages(prev => {
       const newPreviews = [...prev];
-      
-      // Revoke object URL to prevent memory leaks
-      if (newPreviews[index].file) {
-        URL.revokeObjectURL(newPreviews[index].url);
-      }
-      
       newPreviews.splice(index, 1);
       return newPreviews;
     });
@@ -172,27 +192,42 @@ export default function ProductForm({ product, isEditing = false }) {
     
     try {
       // First, upload images if there are new ones
-      const uploadedImageUrls = [];
+      const uploadedImages = [];
       const newImages = previewImages.filter(img => img.file);
       
       if (newImages.length > 0) {
-        // In a real app, you would upload to your storage service
-        // For now, we'll simulate successful uploads
+        // Upload each new image to Cloudinary
         for (const img of newImages) {
-          // Simulate upload delay
-          await new Promise(resolve => setTimeout(resolve, 500));
+          const formData = new FormData();
+          formData.append('file', img.file);
+          formData.append('folder', 'products');
           
-          // In a real app, this would be the URL returned from your upload service
-          uploadedImageUrls.push(img.url);
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to upload image');
+          }
+          
+          const result = await response.json();
+          uploadedImages.push({
+            url: result.url,
+            publicId: result.publicId
+          });
         }
       }
       
-      // Combine existing image URLs with new ones
-      const existingImageUrls = previewImages
+      // Combine existing image data with new ones
+      const existingImages = previewImages
         .filter(img => !img.file)
-        .map(img => img.url);
+        .map(img => ({
+          url: img.url,
+          publicId: img.publicId || ''
+        }));
       
-      const allImageUrls = [...existingImageUrls, ...uploadedImageUrls];
+      const allImages = [...existingImages, ...uploadedImages];
       
       // Prepare the product data
       const productData = {
@@ -200,9 +235,9 @@ export default function ProductForm({ product, isEditing = false }) {
         price: Number(data.price),
         originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
         inventory: Number(data.inventory),
-        images: allImageUrls,
+        images: allImages,
         // Use the first image as the main product image
-        image: allImageUrls[0] || ''
+        image: allImages.length > 0 ? allImages[0].url : ''
       };
       
       // Send to API
@@ -362,12 +397,19 @@ export default function ProductForm({ product, isEditing = false }) {
                     <div key={index} className="relative group">
                       <div className="aspect-square rounded-md overflow-hidden border border-gray-200">
                         <div className="relative h-full w-full">
-                          <Image
-                            src={image.url}
-                            alt={`Preview ${index + 1}`}
-                            fill
-                            className="object-cover"
-                          />
+                          {image && image.url && typeof image.url === 'string' && image.url.length > 0 ? (
+                            <Image
+                              src={image.url}
+                              alt={`Preview ${index + 1}`}
+                              fill
+                              className="object-cover"
+                              unoptimized={image.url.startsWith('blob:')}
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                              <p className="text-gray-500 text-xs">No preview</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <button

@@ -32,9 +32,28 @@ export async function POST(request) {
       data.discount = discount > 0 ? discount : 0;
     }
     
+    // Validate image data
+    if (!data.image || !data.image.url || !data.image.publicId) {
+      return NextResponse.json(
+        { success: false, message: 'Image URL and publicId are required' },
+        { status: 400 }
+      );
+    }
+    
     const banner = await Banner.create({
-      ...data,
+      title: data.title,
+      description: data.description,
+      originalPrice: data.originalPrice,
+      salePrice: data.salePrice,
+      discount: data.discount,
+      image: {
+        url: data.image.url,
+        publicId: data.image.publicId
+      },
+      imageAlt: data.imageAlt,
+      expiryHours: data.expiryHours,
       isActive: data.isActive !== undefined ? data.isActive : true,
+      order: data.order || 0,
       created_at: new Date(),
       updated_at: new Date()
     });
@@ -43,7 +62,11 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error creating banner:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to create banner' },
+      { 
+        success: false, 
+        message: 'Failed to create banner', 
+        error: error.message 
+      },
       { status: 500 }
     );
   }

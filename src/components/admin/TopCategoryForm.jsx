@@ -24,7 +24,9 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
     defaultValues: {
       name: '',
       price: '',
-      imageSrc: '',
+      imageFile: null,
+      imageUrl: '',
+      imagePublicId: '',
       backgroundColor: 'bg-base-300',
       isMainCategory: false,
       order: 0,
@@ -49,7 +51,7 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
     if (isEditing && topCategory) {
       // Populate form with topCategory data using React Hook Form's setValue
       const fields = [
-        'name', 'price', 'imageSrc', 'backgroundColor', 'isMainCategory', 'order', 'isActive'
+        'name', 'price', 'backgroundColor', 'isMainCategory', 'order', 'isActive'
       ];
       
       fields.forEach(field => {
@@ -59,9 +61,11 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
           field === 'order' ? 0 : '');
       });
       
-      // Set preview image if available
-      if (topCategory.imageSrc) {
-        setPreviewImage(topCategory.imageSrc);
+      // Set image data if available
+      if (topCategory.image && topCategory.image.url) {
+        setValue('imageUrl', topCategory.image.url);
+        setValue('imagePublicId', topCategory.image.publicId);
+        setPreviewImage(topCategory.image.url);
       }
     }
   }, [isEditing, topCategory, setValue]);
@@ -72,21 +76,20 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
     const file = e.target.files[0];
     if (!file) return;
     
-    // In a real application, you would upload the file to your storage service
-    // For now, we'll just create a local URL for preview
+    // Create a local URL for preview
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
     
-    // In a real app, you would get the URL from your storage service
-    // For demo purposes, we'll use the local URL
-    setValue('imageSrc', imageUrl);
+    // Store the file for later upload
+    setValue('imageFile', file);
   };
 
 
 
   const onSubmit = async (data) => {
     // Validate image
-    if (!data.imageSrc) {
+    if (!data.imageFile && !data.imageUrl) {
+      setServerError('Please upload an image for the category');
       return;
     }
     
@@ -94,11 +97,42 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
     setServerError('');
     
     try {
+      let imageData = {
+        url: data.imageUrl,
+        publicId: data.imagePublicId
+      };
+      
+      // If there's a new image file, upload it to Cloudinary
+      if (data.imageFile) {
+        const formData = new FormData();
+        formData.append('file', data.imageFile);
+        formData.append('folder', 'categories');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload image');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        imageData = {
+          url: uploadResult.url,
+          publicId: uploadResult.publicId
+        };
+      }
+      
       // Prepare the category data
       const categoryData = {
-        ...data,
+        name: data.name,
         price: Number(data.price),
-        order: Number(data.order)
+        image: imageData,
+        backgroundColor: data.backgroundColor,
+        isMainCategory: data.isMainCategory,
+        order: Number(data.order),
+        isActive: data.isActive
       };
       
       // Send to API
@@ -209,9 +243,7 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Upload Image*
                 </label>
-                <div className={`border-2 border-dashed rounded-lg p-4 text-center ${
-                  errors.imageSrc ? 'border-red-300' : 'border-gray-300'
-                }`}>
+                <div className={`border-2 border-dashed rounded-lg p-4 text-center ${errors.imageFile ? 'border-red-300' : 'border-gray-300'}`}>
                   <input
                     type="file"
                     id="image"
@@ -233,24 +265,31 @@ export default function TopCategoryForm({ topCategory, isEditing = false }) {
                     </span>
                   </label>
                 </div>
-                {errors.imageSrc && (
-                  <p className="mt-1 text-sm text-red-600 error-message">{errors.imageSrc.message}</p>
+                {errors.imageFile && (
+                  <p className="mt-1 text-sm text-red-600 error-message">{errors.imageFile.message}</p>
                 )}
               </div>
               
-              {previewImage && (
+              {previewImage ? (
                 <div className="mt-4">
                   <h3 className="font-medium text-gray-700 mb-2">Preview</h3>
                   <div className={`relative h-48 w-48 rounded-md overflow-hidden border border-gray-200 mx-auto ${watch('backgroundColor')}`}>
-                    <Image
-                      src={previewImage}
-                      alt="Category preview"
-                      fill
-                      className="object-contain"
-                    />
+                    {typeof previewImage === 'string' && previewImage.length > 0 ? (
+                      <Image
+                        src={previewImage}
+                        alt="Category preview"
+                        fill
+                        className="object-contain"
+                        unoptimized={previewImage.startsWith('blob:')}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full w-full bg-gray-100">
+                        <p className="text-gray-500">Image preview not available</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

@@ -22,8 +22,17 @@ const BannerSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  imageSrc: {
-    type: String,
+  image: {
+    type: {
+      url: {
+        type: String,
+        required: [true, 'Please provide an image URL for this banner.']
+      },
+      publicId: {
+        type: String,
+        required: [true, 'Please provide an image public ID for this banner.']
+      }
+    },
     required: [true, 'Please provide an image for this banner.'],
   },
   imageAlt: {

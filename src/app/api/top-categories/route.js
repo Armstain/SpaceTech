@@ -26,6 +26,14 @@ export async function POST(request) {
     
     const data = await request.json();
     
+    // Validate image data
+    if (!data.image || !data.image.url || !data.image.publicId) {
+      return NextResponse.json(
+        { success: false, message: 'Image URL and publicId are required' },
+        { status: 400 }
+      );
+    }
+    
     // Check if this is a main category and there's already one
     if (data.isMainCategory) {
       const existingMain = await TopCategory.findOne({ isMainCategory: true });
@@ -36,7 +44,15 @@ export async function POST(request) {
     }
     
     const topCategory = await TopCategory.create({
-      ...data,
+      name: data.name,
+      price: data.price,
+      image: {
+        url: data.image.url,
+        publicId: data.image.publicId
+      },
+      backgroundColor: data.backgroundColor || 'bg-base-300',
+      isMainCategory: data.isMainCategory || false,
+      order: data.order || 0,
       isActive: data.isActive !== undefined ? data.isActive : true,
       created_at: new Date(),
       updated_at: new Date()
@@ -46,7 +62,11 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error creating top category:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to create top category' },
+      { 
+        success: false, 
+        message: 'Failed to create top category',
+        error: error.message 
+      },
       { status: 500 }
     );
   }
