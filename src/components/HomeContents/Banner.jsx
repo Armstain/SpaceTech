@@ -12,11 +12,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'react-hot-toast';
+// Fallback images for when MongoDB data is loading
 import image1 from '@/public/assets/1.jpg';
 import image2 from '@/public/assets/2.jpg';
 import image3 from '@/public/assets/3.jpg';
 
-const deals = [
+// Fallback deals in case API fails
+const fallbackDeals = [
   {
     id: 1,
     title: "Premium Wireless Headphones",
@@ -116,7 +118,39 @@ const CountdownTimer = ({ hours }) => {
 
 const Banner = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [deals, setDeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { addItem } = useCart();
+  
+  // Fetch banner data from MongoDB
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/banners');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch banners');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          setDeals(data.data);
+        } else {
+          // Use fallback data if no banners found
+          setDeals(fallbackDeals);
+        }
+      } catch (error) {
+        console.error('Error fetching banners:', error);
+        setDeals(fallbackDeals);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBanners();
+  }, []);
   
   const handleSlideChange = (swiper) => {
     setActiveIndex(swiper.activeIndex);
@@ -124,10 +158,10 @@ const Banner = () => {
 
   const handleAddToCart = (deal) => {
     addItem({
-      id: deal.id,
+      id: deal._id || deal.id,
       name: deal.title,
       price: deal.salePrice,
-      image: deal.imageSrc.src || deal.imageSrc,
+      image: typeof deal.imageSrc === 'object' ? deal.imageSrc.src : deal.imageSrc,
       quantity: 1
     });
     
@@ -146,6 +180,11 @@ const Banner = () => {
         transition={{ duration: 0.8 }}
         className="container mx-auto relative"
       >
+        {isLoading ? (
+          <div className="h-96 md:h-[28rem] flex items-center justify-center bg-gray-100 rounded-xl">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : (
         <Swiper
           modules={[Autoplay, Pagination, Navigation, EffectFade]}
           effect="fade"
@@ -161,7 +200,7 @@ const Banner = () => {
           // }}
 
           onSlideChange={handleSlideChange}
-          className="h-96 md:h-[28rem] rounded-xl overflow-hidden shadow-md"
+          className="h-96 md:h-[28rem] rounded-xl overflow-hidden"
         >
           {deals.map((deal, index) => (
             <SwiperSlide key={deal.id} className="text-gray-800 bg-white">
@@ -183,7 +222,7 @@ const Banner = () => {
                       />
                       
                       {/* Discount badge */}
-                      <div className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-center z-10 shadow-lg">
+                      <div className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-16 h-16 flex flex-col items-center justify-center text-center z-10 ">
                         <span className="font-bold text-xl leading-none">{deal.discount}%</span>
                         <span className="text-xs font-medium">OFF</span>
                       </div>
@@ -231,6 +270,7 @@ const Banner = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+        )}
       </motion.div>
     </div>
   );

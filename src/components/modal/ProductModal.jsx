@@ -77,6 +77,8 @@ const ProductModal = ({ product, onClose }) => {
                 src={productImages[currentImageIndex]} 
                 alt={product.name} 
                 className="max-h-full object-contain"
+                width={800}
+                height={600}
               />
               
               <button 
@@ -102,7 +104,13 @@ const ProductModal = ({ product, onClose }) => {
                   className={`border-2 p-1 rounded ${currentImageIndex === index ? 'border-primary' : 'border-gray-200'}`}
                   onClick={() => setCurrentImageIndex(index)}
                 >
-                  <img src={img} alt="" className="h-16 w-16 object-contain" />
+                 <Image
+                 src={img}
+                 alt={product.name}
+                 className="h-16 w-16 object-contain"
+                 width={800}
+                 height={600}
+                 />
                 </button>
               ))}
             </div>

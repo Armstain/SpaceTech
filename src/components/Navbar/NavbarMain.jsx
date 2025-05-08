@@ -1,7 +1,9 @@
 'use client'
 import React, { useState, useRef } from 'react'
-import { Search, ShoppingCart, Gift, CheckCircle, Menu, Laptop, Smartphone, Watch, Headphones, Camera, Monitor, Cpu, Keyboard, Printer, Gamepad } from 'lucide-react'
+import { Search, ShoppingCart, Gift, CheckCircle, Menu, Laptop, Smartphone, Watch, Headphones, Camera, User, LogOut, Settings } from 'lucide-react'
 import Link from 'next/link'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Dropdown from '@/components/ui/Dropdown'
 import { useCart } from '@/context/CartContext'
 
@@ -51,12 +53,21 @@ const categoryData = [
 
 const NavbarMain = () => {
   const { items, itemCount, subtotal } = useCart();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const isAuthenticated = status === 'authenticated';
+  const isAdmin = isAuthenticated && session?.user?.role === 'admin';
   
   // Format subtotal to display as currency
   const formattedSubtotal = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   }).format(subtotal);
+  
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
   
   return (
     <div className='bg-primary text-primary-content relative z-10'>
@@ -110,23 +121,91 @@ const NavbarMain = () => {
             </div>
           </div>
 
-          {/* Right - Cart */}
-          <Dropdown
-            trigger={
-              <Link 
-                href="/cart" 
-                className="bg-secondary text-secondary-content h-full px-6 py-4 items-center gap-2 ml-auto hidden md:flex"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <div className="flex items-center gap-1">
-                  <span>{itemCount} {itemCount === 1 ? 'Item' : 'Items'}</span>
-                  {/* <span>{formattedSubtotal}</span> */}
-                </div>
-              </Link>
-            }
-          >
-            <div className="p-4 w-80 text-black">
-              <h3 className="font-medium text-lg mb-3">Cart Preview</h3>
+          {/* Right - User Account & Cart */}
+          <div className="flex items-center ml-auto">
+            {/* User Account */}
+            <Dropdown
+              trigger={
+                <button className="h-full px-4 py-4 flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  <span className="hidden lg:inline">
+                    {isAuthenticated && session?.user?.name ? session.user.name.split(' ')[0] : 'Account'}
+                  </span>
+                </button>
+              }
+            >
+              <div className="p-4 w-64 text-base-content">
+                {isAuthenticated ? (
+                  <>
+                    <div className="mb-4 pb-3 border-b">
+                      <p className="font-medium text-lg">{session?.user?.name || 'User'}</p>
+                      <p className="text-sm text-gray-500">{session?.user?.email || ''}</p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Link 
+                        href="/profile" 
+                        className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md w-full transition-colors"
+                      >
+                        <User className="w-5 h-5" />
+                        <span>My Profile</span>
+                      </Link>
+                      
+                      {isAdmin && (
+                        <Link 
+                          href="/admin" 
+                          className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md w-full transition-colors"
+                        >
+                          <Settings className="w-5 h-5" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+                      
+                      <button 
+                        onClick={handleSignOut}
+                        className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md w-full transition-colors text-left"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-3">
+                    <Link 
+                      href="/login" 
+                      className="block w-full bg-primary text-white py-2 px-4 rounded text-center hover:bg-primary-dark transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link 
+                      href="/register" 
+                      className="block w-full bg-secondary text-white py-2 px-4 rounded text-center hover:bg-secondary-dark transition-colors"
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </Dropdown>
+            
+            {/* Cart */}
+            <Dropdown
+              trigger={
+                <Link 
+                  href="/cart" 
+                  className="bg-secondary text-secondary-content h-full px-6 py-4 items-center gap-2 hidden md:flex"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <div className="flex items-center gap-1">
+                    <span>{itemCount} {itemCount === 1 ? 'Item' : 'Items'}</span>
+                    {/* <span>{formattedSubtotal}</span> */}
+                  </div>
+                </Link>
+              }
+            >
+              <div className="p-4 w-80 text-black">
+                <h3 className="font-medium text-lg mb-3">Cart Preview</h3>
               
               {items.length === 0 ? (
                 <p className="text-gray-500">Your cart is empty</p>
@@ -175,8 +254,9 @@ const NavbarMain = () => {
                   </div>
                 </>
               )}
-            </div>
-          </Dropdown>
+              </div>
+            </Dropdown>
+          </div>
         </div>
       </div>
     </div>

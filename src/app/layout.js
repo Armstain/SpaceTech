@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { CartProvider } from "@/context/CartContext";
 import Footer from "../components/Footer/Footer";
 import Navbar from "@/components/Navbar/Navbar";
+import AuthProvider from "@/components/auth/AuthProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,14 +26,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <CartProvider> 
-        <Navbar />
-        
-          {children}
-        
-        <Footer />
-        <Toaster position="top-right" />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider> 
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster position="top-right" />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
