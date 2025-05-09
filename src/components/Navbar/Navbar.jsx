@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 import NavbarOffer from "./NavbarOffer"
 import NavbarMenu from "./NavbarMenu"
 import NavbarMain from "./NavbarMain"
@@ -9,6 +10,10 @@ const Navbar = () => {
   const [showOffer, setShowOffer] = useState(true)
   const [showMenu, setShowMenu] = useState(true)
   const { scrollY } = useScroll()
+  const pathname = usePathname()
+  
+  // Hide navbar on admin pages
+  const isAdminPage = pathname?.startsWith('/admin')
   
   useMotionValueEvent(scrollY, "change", (latest) => {
     
@@ -30,6 +35,11 @@ const Navbar = () => {
   const menuHeight = showMenu ? 65 : 0
   const mainHeight = 64
 
+  // Don't render navbar on admin pages
+  if (isAdminPage) {
+    return null
+  }
+  
   return (
     <>
       <div style={{ height: `${offerHeight + menuHeight + mainHeight}px` }}></div>

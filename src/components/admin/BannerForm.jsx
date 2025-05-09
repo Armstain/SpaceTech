@@ -10,6 +10,7 @@ export default function BannerForm({ banner, isEditing = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [serverError, setServerError] = useState('');
+  const [categories, setCategories] = useState([]);
   
   // Initialize React Hook Form
   const { 
@@ -33,16 +34,35 @@ export default function BannerForm({ banner, isEditing = false }) {
       imageAlt: '',
       expiryHours: 24,
       isActive: true,
-      order: 0
+      order: 0,
+      category: ''
     }
   });
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data.categories || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (isEditing && banner) {
       // Populate form with banner data using React Hook Form's setValue
       const fields = [
         'title', 'description', 'originalPrice', 'salePrice', 'discount',
-        'imageAlt', 'expiryHours', 'isActive', 'order'
+        'imageAlt', 'expiryHours', 'isActive', 'order', 'category'
       ];
       
       fields.forEach(field => {
@@ -133,7 +153,8 @@ export default function BannerForm({ banner, isEditing = false }) {
         imageAlt: data.imageAlt,
         expiryHours: Number(data.expiryHours),
         isActive: data.isActive,
-        order: Number(data.order)
+        order: Number(data.order),
+        category: data.category || undefined
       };
       
       // Send to API
@@ -457,6 +478,27 @@ export default function BannerForm({ banner, isEditing = false }) {
                 </p>
               </div>
               
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  id="category"
+                  {...register('category')}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  Optional - associate this banner with a category
+                </p>
+              </div>
+
               <div className="flex items-center">
                 <Controller
                   name="isActive"

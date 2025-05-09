@@ -87,7 +87,7 @@ export default function ProductForm({ product, isEditing = false }) {
       }
       
       const data = await response.json();
-      setCategories(data.data || []);
+      setCategories(data.categories || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -540,10 +540,8 @@ export default function ProductForm({ product, isEditing = false }) {
                 </label>
                 <select
                   id="category"
-                  {...register('category', { required: 'Category is required' })}
-                  className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary ${
-                    errors.category ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  {...register('category')}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="">Select a category</option>
                   {categories.map(category => (
@@ -552,9 +550,9 @@ export default function ProductForm({ product, isEditing = false }) {
                     </option>
                   ))}
                 </select>
-                {errors.category && (
-                  <p className="mt-1 text-sm text-red-600 error-message">{errors.category.message}</p>
-                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  Optional - associate this product with a category
+                </p>
               </div>
               
               <div>
